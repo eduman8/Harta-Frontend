@@ -132,7 +132,7 @@ function AdminProductsPage({ onSessionExpired }) {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/products/admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/admin`, {
         headers: withAdminAuth(),
       });
 
@@ -262,7 +262,7 @@ function AdminProductsPage({ onSessionExpired }) {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/products/admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/admin`, {
         method: "POST",
         headers: withAdminAuth({ includeJson: true }),
         body: JSON.stringify({
@@ -317,7 +317,7 @@ function AdminProductsPage({ onSessionExpired }) {
     setSavingById((prev) => ({ ...prev, [productId]: true }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/products/admin/${productId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/admin/${productId}`, {
         method: "PATCH",
         headers: withAdminAuth({ includeJson: true }),
         body: JSON.stringify({
@@ -368,7 +368,7 @@ function AdminProductsPage({ onSessionExpired }) {
     setDeletingById((prev) => ({ ...prev, [product.id]: true }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/products/admin/${product.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/admin/${product.id}`, {
         method: "DELETE",
         headers: withAdminAuth(),
       });

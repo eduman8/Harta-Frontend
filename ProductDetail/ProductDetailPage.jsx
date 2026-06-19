@@ -96,7 +96,7 @@ function ProductDetailPage() {
       setLoadedThumbs({});
 
       try {
-        const response = await fetch(`${API_BASE_URL}/products/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
         const payload = await response.json().catch(() => null);
 
         if (response.status === 404) {
@@ -110,7 +110,7 @@ function ProductDetailPage() {
         if (!isMounted) return;
         setProduct(payload);
 
-        fetch(`${API_BASE_URL}/products`)
+        fetch(`${API_BASE_URL}/api/products`)
           .then(async (res) => {
             const productsPayload = await res.json().catch(() => []);
             if (!res.ok) return [];
