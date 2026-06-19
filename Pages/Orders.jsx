@@ -19,6 +19,7 @@ import {
   getOrderShippingReference,
   isPickupOrder,
 } from "../utils/orderDelivery";
+import { API_BASE_URL } from "../config/api";
 import "./Orders.css";
 
 function Orders({ user, onSessionExpired }) {
@@ -38,7 +39,7 @@ function Orders({ user, onSessionExpired }) {
     setLoading(true);
     setLoadError("");
 
-    fetch("http://localhost:3000/api/orders/my-orders", {
+    fetch(`${API_BASE_URL}/orders/my-orders`, {
       headers: buildAuthHeaders(),
     })
       .then(async (res) => {

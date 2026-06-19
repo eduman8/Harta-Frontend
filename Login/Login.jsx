@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import { API_BASE_URL } from "../config/api";
 
 function Login({ setUser }) {
   const googleBtnRef = useRef(null);
@@ -30,7 +30,6 @@ function Login({ setUser }) {
     return () => clearInterval(interval);
   }, []);
 
-  const API_BASE_URL = "http://localhost:3000/api";
 
   function handleCredentialResponse(response) {
     fetch(`${API_BASE_URL}/auth/google`, {

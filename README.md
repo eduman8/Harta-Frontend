@@ -10,7 +10,7 @@ cp .env.example .env
 
 Variable disponible:
 
-- `VITE_API_BASE_URL` (ej: `http://localhost:3000`)
+- `VITE_API_BASE_URL` (producción Hostinger: `https://slategrey-crab-298049.hostingersite.com`; local opcional: `http://localhost:3000/api`)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

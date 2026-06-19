@@ -21,7 +21,7 @@ import {
 } from "../utils/orderDelivery";
 import "./AdminOrdersPage.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+import { API_BASE_URL } from "../config/api";
 const ADMIN_ORDER_STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "rejected"];
 
 const renderInfoRows = (rows) => (
