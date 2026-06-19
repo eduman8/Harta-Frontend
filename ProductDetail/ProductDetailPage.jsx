@@ -8,27 +8,8 @@ import "./ProductDetailPage.css";
 import "../Skeleton/SkeletonBlock.css";
 
 import { API_BASE_URL } from "../config/api";
+import { getProductImages } from "../utils/productImages";
 const DEFAULT_TITLE = "#HARTA";
-
-const normalizeImageValue = (image) => (typeof image === "string" ? image.trim() : "");
-
-const getProductImages = (product = {}) => {
-  const candidates = [
-    ...(Array.isArray(product.images) ? product.images : []),
-    product.image_url,
-    product.image,
-  ];
-
-  return candidates.reduce((images, image) => {
-    const normalizedImage = normalizeImageValue(image);
-
-    if (!normalizedImage || images.includes(normalizedImage)) {
-      return images;
-    }
-
-    return [...images, normalizedImage];
-  }, []);
-};
 
 const formatPrice = (price) => {
   const value = Number(price || 0);

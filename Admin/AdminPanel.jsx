@@ -10,8 +10,14 @@ import {
 import "./AdminPanel.css";
 
 import { API_BASE_URL } from "../config/api";
+import {
+  buildProductImagesPayload,
+  getProductImages,
+  MAX_PRODUCT_IMAGES,
+  toProductImageInputs,
+} from "../utils/productImages";
 
-const emptyImages = ["", "", ""];
+const emptyImages = Array(MAX_PRODUCT_IMAGES).fill("");
 
 const initialForm = {
   name: "",
@@ -33,33 +39,7 @@ const isValidHttpUrl = (value) => {
   }
 };
 
-const getProductImages = (product = {}) => {
-  const images = Array.isArray(product.images) ? product.images : [];
-  const fallbackImage = product.image_url || product.image || "";
-  const normalizedImages = images
-    .map((image) => String(image || "").trim())
-    .filter(Boolean);
-
-  if (normalizedImages.length > 0) {
-    return normalizedImages.slice(0, 3);
-  }
-
-  return fallbackImage ? [String(fallbackImage).trim()] : [];
-};
-
-const toImageInputs = (images = []) => {
-  const normalizedImages = images
-    .map((image) => String(image || "").trim())
-    .filter(Boolean)
-    .slice(0, 3);
-
-  return [...normalizedImages, ...emptyImages].slice(0, 3);
-};
-
-const normalizeImageInputs = (images = []) =>
-  images
-    .map((image) => String(image || "").trim())
-    .filter(Boolean);
+const normalizeImageInputs = buildProductImagesPayload;
 
 const getProductCategoryId = (product = {}) => product.category_id ?? product.categoryId ?? "";
 
@@ -157,7 +137,7 @@ function AdminProductsPage({ onSessionExpired }) {
             description: product.description || "",
             price: String(product.price ?? ""),
             categoryId: String(getProductCategoryId(product)),
-            images: toImageInputs(getProductImages(product)),
+            images: toProductImageInputs(getProductImages(product)),
             stock: String(product.stock ?? 0),
             active: Boolean(product.active),
             is_hotsale: Boolean(product.is_hotsale),
@@ -339,12 +319,18 @@ function AdminProductsPage({ onSessionExpired }) {
         throw new Error(payload?.error || "No se pudo guardar el producto.");
       }
 
-      setProducts((prev) => prev.map((product) => (product.id === productId ? payload : product)));
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === productId
+            ? { ...(payload || product), images: getProductImages({ ...(payload || {}), images: normalizedImages }) }
+            : product,
+        ),
+      );
       setDraftsById((prev) => ({
         ...prev,
         [productId]: {
           ...(prev[productId] || {}),
-          images: toImageInputs(getProductImages(payload || {})),
+          images: toProductImageInputs(getProductImages({ ...(payload || {}), images: normalizedImages })),
         },
       }));
       success(`Producto #${productId} actualizado.`);
@@ -509,7 +495,7 @@ function AdminProductsPage({ onSessionExpired }) {
         <div className="admin-products-list">
           {filteredProducts.map((product) => {
             const draft = draftsById[product.id] || {};
-            const draftImages = draft.images || toImageInputs(getProductImages(product));
+            const draftImages = draft.images || toProductImageInputs(getProductImages(product));
             const previewImage = normalizeImageInputs(draftImages)[0] || "https://via.placeholder.com/120x120?text=Sin+Imagen";
             const hasStock = Number(draft.stock ?? product.stock ?? 0) > 0;
             const isActive = Boolean(draft.active);

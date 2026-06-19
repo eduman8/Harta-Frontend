@@ -1,18 +1,9 @@
 import "./productCard.css";
 import "../Skeleton/SkeletonBlock.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "../Hooks/useCart";
 import { useNavigate } from "react-router-dom";
-
-const getNormalizedProductImages = (product) => {
-  const images = Array.isArray(product?.images)
-    ? product.images.map((image) => String(image || "").trim()).filter(Boolean)
-    : [];
-  const fallbackImage = product?.image_url || product?.image || "";
-
-  if (images.length > 0) return images.slice(0, 3);
-  return fallbackImage ? [String(fallbackImage).trim()] : [];
-};
+import { getProductImages } from "../utils/productImages";
 
 function ProductCard({ product }) {
   const { addToCart, isMutatingCart } = useCart();
@@ -24,20 +15,16 @@ function ProductCard({ product }) {
   const stockLabel = !isActive ? "No disponible" : !hasStock ? "Sin stock" : "En stock";
   const stockClass = !isActive || !hasStock ? "stock-pill stock-pill--off" : "stock-pill";
   const description = typeof product?.description === "string" ? product.description.trim() : "";
-  const images = getNormalizedProductImages(product);
+  const images = getProductImages(product);
   const productImage = images[0] || "";
   const secondaryImage = images[1];
   const hasSecondaryImage = Boolean(secondaryImage);
-  const [primaryImageLoaded, setPrimaryImageLoaded] = useState(false);
-  const [secondaryImageLoaded, setSecondaryImageLoaded] = useState(false);
-
-  useEffect(() => {
-    setPrimaryImageLoaded(false);
-  }, [productImage]);
-
-  useEffect(() => {
-    setSecondaryImageLoaded(false);
-  }, [secondaryImage]);
+  const [primaryImageStatus, setPrimaryImageStatus] = useState({ src: "", loaded: false, failed: false });
+  const [secondaryImageStatus, setSecondaryImageStatus] = useState({ src: "", loaded: false, failed: false });
+  const primaryImageLoaded = primaryImageStatus.src === productImage && primaryImageStatus.loaded;
+  const primaryImageFailed = primaryImageStatus.src === productImage && primaryImageStatus.failed;
+  const secondaryImageLoaded = secondaryImageStatus.src === secondaryImage && secondaryImageStatus.loaded;
+  const secondaryImageFailed = secondaryImageStatus.src === secondaryImage && secondaryImageStatus.failed;
 
   const goToProductDetail = () => {
     if (!product?.id) return;
@@ -61,16 +48,16 @@ function ProductCard({ product }) {
     >
       <div
         className={
-          hasSecondaryImage && secondaryImageLoaded
+          hasSecondaryImage && !secondaryImageFailed && secondaryImageLoaded
             ? "card__image-wrapper card__image-wrapper--has-hover"
             : "card__image-wrapper"
         }
       >
         {isHotsale && <span className="product-card__hotsale-badge">#HOTSALE</span>}
-        {productImage && !primaryImageLoaded && (
+        {productImage && !primaryImageLoaded && !primaryImageFailed && (
           <span className="card__image-placeholder skeleton-block" aria-hidden="true" />
         )}
-        {productImage ? (
+        {productImage && !primaryImageFailed ? (
           <img
             className={
               primaryImageLoaded
@@ -79,12 +66,13 @@ function ProductCard({ product }) {
             }
             src={productImage}
             alt={product.name}
-            onLoad={() => setPrimaryImageLoaded(true)}
+            onLoad={() => setPrimaryImageStatus({ src: productImage, loaded: true, failed: false })}
+            onError={() => setPrimaryImageStatus({ src: productImage, loaded: true, failed: true })}
           />
         ) : (
           <span className="card__image-fallback">Sin imagen</span>
         )}
-        {hasSecondaryImage && (
+        {hasSecondaryImage && !secondaryImageFailed && (
           <img
             className={
               secondaryImageLoaded
@@ -94,7 +82,8 @@ function ProductCard({ product }) {
             src={secondaryImage}
             alt=""
             aria-hidden="true"
-            onLoad={() => setSecondaryImageLoaded(true)}
+            onLoad={() => setSecondaryImageStatus({ src: secondaryImage, loaded: true, failed: false })}
+            onError={() => setSecondaryImageStatus({ src: secondaryImage, loaded: true, failed: true })}
           />
         )}
       </div>
