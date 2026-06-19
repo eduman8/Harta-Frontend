@@ -39,7 +39,7 @@ function Orders({ user, onSessionExpired }) {
     setLoading(true);
     setLoadError("");
 
-    fetch(`${API_BASE_URL}/orders/my-orders`, {
+    fetch(`${API_BASE_URL}/api/orders/my-orders`, {
       headers: buildAuthHeaders(),
     })
       .then(async (res) => {

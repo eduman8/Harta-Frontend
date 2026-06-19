@@ -132,7 +132,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     setCartError("");
 
     requestJson(
-      `${API_BASE_URL}/cart/user/${user.id}`,
+      `${API_BASE_URL}/api/cart/user/${user.id}`,
       {},
       "No se pudo cargar el carrito.",
     )
@@ -163,7 +163,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     setCartLoading(true);
 
     return requestJson(
-      `${API_BASE_URL}/cart/user/${user.id}`,
+      `${API_BASE_URL}/api/cart/user/${user.id}`,
       {},
       "No se pudo actualizar el carrito.",
     )
@@ -210,7 +210,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     setCartError("");
 
     requestJson(
-      `${API_BASE_URL}/cart`,
+      `${API_BASE_URL}/api/cart`,
       {
         method: "POST",
         headers: {
@@ -275,7 +275,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     });
 
     requestJson(
-      `${API_BASE_URL}/cart/${cartItemId}`,
+      `${API_BASE_URL}/api/cart/${cartItemId}`,
       { method: "DELETE" },
       "No se pudo eliminar el producto del carrito.",
     )
@@ -329,7 +329,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     setCartError("");
 
     requestJson(
-      `${API_BASE_URL}/cart/${cartItemId}/decrease`,
+      `${API_BASE_URL}/api/cart/${cartItemId}/decrease`,
       { method: "PATCH" },
       "No se pudo actualizar la cantidad del producto.",
     )
@@ -359,7 +359,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     }
 
     return requestJson(
-      `${API_BASE_URL}/orders`,
+      `${API_BASE_URL}/api/orders`,
       {
         method: "POST",
         headers: {
@@ -380,7 +380,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     }
 
     const payload = await requestJson(
-      `${API_BASE_URL}/orders/checkout/mercadopago`,
+      `${API_BASE_URL}/api/orders/checkout/mercadopago`,
       {
         method: "POST",
         headers: {
@@ -408,7 +408,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     }
 
     const payload = await requestJson(
-      `${API_BASE_URL}/orders/checkout/cash`,
+      `${API_BASE_URL}/api/orders/checkout/cash`,
       {
         method: "POST",
         headers: {
@@ -435,7 +435,7 @@ export function CartProvider({ children, user, onSessionExpired }) {
     }
 
     const payload = await requestJson(
-      `${API_BASE_URL}/orders/${orderId}/confirm-mercadopago`,
+      `${API_BASE_URL}/api/orders/${orderId}/confirm-mercadopago`,
       {
         method: "POST",
         headers: {
