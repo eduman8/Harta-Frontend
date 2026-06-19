@@ -4,6 +4,7 @@ import CategoryCard from "../CategoryCard/CategoryCard";
 import CategoryCardSkeleton from "../CategoryCard/CategoryCardSkeleton";
 import "../Skeleton/SkeletonBlock.css";
 import "./Home.css";
+import heroImage from "../src/assets/Imagen-harta.jpeg";
 
 import { API_BASE_URL } from "../config/api";
 
@@ -80,7 +81,7 @@ function Home() {
           {!heroImageLoaded && <span className="hero__image-placeholder skeleton-block" aria-hidden="true" />}
           <img
             className={heroImageLoaded ? "hero__image hero__image--loaded" : "hero__image"}
-            src="/src/assets/Imagen-harta.jpeg"
+            src={heroImage}
             alt="#Harta Imagen"
             onLoad={() => setHeroImageLoaded(true)}
           />
