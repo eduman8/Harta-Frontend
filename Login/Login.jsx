@@ -1,9 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 
 function Login({ setUser }) {
   const googleBtnRef = useRef(null);
   const [ready, setReady] = useState(false);
+
+  const handleCredentialResponse = useCallback(
+    (response) => {
+      fetch(`${API_BASE_URL}/api/auth/google`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: response.credential,
+        }),
+      })
+        .then(async (res) => {
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Error al iniciar sesión");
+          }
+
+          if (!data.token) {
+            throw new Error("No se recibió token");
+          }
+
+          localStorage.setItem("authToken", data.token);
+          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        })
+        .catch((err) => console.error(err));
+    },
+    [setUser]
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,36 +59,7 @@ function Login({ setUser }) {
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
-
-
-  function handleCredentialResponse(response) {
-    fetch(`${API_BASE_URL}/auth/google`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        credential: response.credential,
-      }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "Error al iniciar sesión");
-        }
-
-        if (!data.token) {
-          throw new Error("No se recibió token");
-        }
-
-        localStorage.setItem("authToken", data.token);
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
-      })
-      .catch((err) => console.error(err));
-  }
+  }, [handleCredentialResponse]);
 
   return (
     <div className="login-card">
