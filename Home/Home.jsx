@@ -21,7 +21,7 @@ function Home() {
       setCategoriesError("");
 
       try {
-        const response = await fetch(`${API_BASE_URL}/categories`);
+        const response = await fetch(`${API_BASE_URL}/api/categories`);
         const payload = await response.json().catch(() => []);
 
         if (!response.ok) {
