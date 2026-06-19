@@ -101,7 +101,7 @@ function AdminProductsPage({ onSessionExpired }) {
     setCategoriesError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/admin`, {
         headers: withAdminAuth(),
       });
       const payload = await response.json().catch(() => []);

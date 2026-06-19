@@ -77,7 +77,7 @@ function AdminCategoriesPage({ onSessionExpired }) {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/admin`, {
         headers: withAdminAuth(),
       });
       const payload = await response.json().catch(() => []);
@@ -165,7 +165,7 @@ function AdminCategoriesPage({ onSessionExpired }) {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/admin`, {
         method: "POST",
         headers: withAdminAuth({ includeJson: true }),
         body: JSON.stringify({ name, image_url: imageUrl, active: form.active }),
@@ -215,7 +215,7 @@ function AdminCategoriesPage({ onSessionExpired }) {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/admin/${categoryId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/admin/${categoryId}`, {
         method: "PATCH",
         headers: withAdminAuth({ includeJson: true }),
         body: JSON.stringify({ name, image_url: imageUrl, active: Boolean(draft.active) }),
@@ -267,7 +267,7 @@ function AdminCategoriesPage({ onSessionExpired }) {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/admin/${category.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/admin/${category.id}`, {
         method: "DELETE",
         headers: withAdminAuth(),
       });

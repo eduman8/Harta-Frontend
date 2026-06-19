@@ -75,7 +75,7 @@ function ProductCatalog({ initialCategory = "", title = "Productos", subtitle = 
 
     const loadCategories = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/categories`);
+        const response = await fetch(`${API_BASE_URL}/api/categories`);
         const payload = await response.json().catch(() => []);
         if (!response.ok) throw new Error(payload?.error || "No se pudieron cargar las categorías.");
         if (isMounted) setCategories(Array.isArray(payload) ? payload : []);
