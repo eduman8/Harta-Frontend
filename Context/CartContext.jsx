@@ -7,6 +7,7 @@ import {
   isUnauthorizedResponse,
   SESSION_EXPIRED_MESSAGE,
 } from "../utils/authSession";
+import { API_BASE_URL } from "../config/api";
 
 export function CartProvider({ children, user, onSessionExpired }) {
   const [cart, setCart] = useState([]);
@@ -16,8 +17,6 @@ export function CartProvider({ children, user, onSessionExpired }) {
   const stockMessageTimeoutRef = useRef(null);
   const { info, success, warning, error: notifyError } = useNotification();
 
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
   const normalizeCartPayload = (payload) =>
     Array.isArray(payload) ? payload : [];

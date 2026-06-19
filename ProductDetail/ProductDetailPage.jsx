@@ -7,7 +7,7 @@ import { useCart } from "../Hooks/useCart";
 import "./ProductDetailPage.css";
 import "../Skeleton/SkeletonBlock.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+import { API_BASE_URL } from "../config/api";
 const DEFAULT_TITLE = "#HARTA";
 
 const getProductImages = (product = {}) => {
