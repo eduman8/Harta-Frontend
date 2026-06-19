@@ -50,7 +50,7 @@ function AdminOrdersPage({ onSessionExpired }) {
       setLoadError("");
 
       try {
-        const response = await fetch(`${API_BASE_URL}/orders/admin/orders`, {
+        const response = await fetch(`${API_BASE_URL}/api/orders/admin/orders`, {
           headers: buildAuthHeaders(),
         });
 
@@ -104,7 +104,7 @@ function AdminOrdersPage({ onSessionExpired }) {
     setStatusUpdatingByOrderId((prev) => ({ ...prev, [orderId]: true }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/orders/admin/${orderId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/orders/admin/${orderId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +148,7 @@ function AdminOrdersPage({ onSessionExpired }) {
     setDeletingByOrderId((prev) => ({ ...prev, [orderId]: true }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/orders/admin/${orderId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/orders/admin/${orderId}`, {
         method: "DELETE",
         headers: buildAuthHeaders(),
       });
