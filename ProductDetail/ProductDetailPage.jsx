@@ -10,15 +10,24 @@ import "../Skeleton/SkeletonBlock.css";
 import { API_BASE_URL } from "../config/api";
 const DEFAULT_TITLE = "#HARTA";
 
-const getProductImages = (product = {}) => {
-  const images = Array.isArray(product.images) ? product.images : [];
-  const normalizedImages = images
-    .map((image) => String(image || "").trim())
-    .filter(Boolean);
-  const fallbackImage = product.image_url || product.image || "";
+const normalizeImageValue = (image) => (typeof image === "string" ? image.trim() : "");
 
-  if (normalizedImages.length > 0) return normalizedImages.slice(0, 3);
-  return fallbackImage ? [String(fallbackImage).trim()] : [];
+const getProductImages = (product = {}) => {
+  const candidates = [
+    ...(Array.isArray(product.images) ? product.images : []),
+    product.image_url,
+    product.image,
+  ];
+
+  return candidates.reduce((images, image) => {
+    const normalizedImage = normalizeImageValue(image);
+
+    if (!normalizedImage || images.includes(normalizedImage)) {
+      return images;
+    }
+
+    return [...images, normalizedImage];
+  }, []);
 };
 
 const formatPrice = (price) => {
@@ -77,6 +86,7 @@ function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedImageLoaded, setSelectedImageLoaded] = useState(false);
+  const [failedImages, setFailedImages] = useState({});
   const [loadedThumbs, setLoadedThumbs] = useState({});
 
   const images = useMemo(() => getProductImages(product || {}), [product]);
@@ -93,6 +103,7 @@ function ProductDetailPage() {
       setSelectedImageIndex(0);
       setLightboxIndex(null);
       setSelectedImageLoaded(false);
+      setFailedImages({});
       setLoadedThumbs({});
 
       try {
@@ -164,6 +175,28 @@ function ProductDetailPage() {
   }, [selectedImage]);
 
   useEffect(() => {
+    if (selectedImageIndex >= images.length) {
+      setSelectedImageIndex(0);
+    }
+  }, [images.length, selectedImageIndex]);
+
+  const markImageAsLoaded = (image) => {
+    setSelectedImageLoaded(true);
+    setLoadedThumbs((current) => ({ ...current, [image]: true }));
+    setFailedImages((current) => {
+      if (!current[image]) return current;
+      const next = { ...current };
+      delete next[image];
+      return next;
+    });
+  };
+
+  const markImageAsFailed = (image) => {
+    setSelectedImageLoaded(true);
+    setFailedImages((current) => ({ ...current, [image]: true }));
+  };
+
+  useEffect(() => {
     document.title = product?.name ? `${product.name} | ${DEFAULT_TITLE}` : DEFAULT_TITLE;
 
     return () => {
@@ -210,7 +243,7 @@ function ProductDetailPage() {
               aria-label="Abrir galería fullscreen"
               disabled={!selectedImage}
             >
-              {selectedImage ? (
+              {selectedImage && !failedImages[selectedImage] ? (
                 <>
                   {!selectedImageLoaded && (
                     <span className="product-detail__image-placeholder skeleton-block" aria-hidden="true" />
@@ -219,11 +252,12 @@ function ProductDetailPage() {
                     className={selectedImageLoaded ? "product-detail__image--loaded" : ""}
                     src={selectedImage}
                     alt={product.name}
-                    onLoad={() => setSelectedImageLoaded(true)}
+                    onLoad={() => markImageAsLoaded(selectedImage)}
+                    onError={() => markImageAsFailed(selectedImage)}
                   />
                 </>
               ) : (
-                <span>Sin imagen</span>
+                <span className="product-detail__image-fallback">Sin imagen</span>
               )}
             </button>
 
@@ -245,15 +279,22 @@ function ProductDetailPage() {
                     aria-label={`Ver imagen ${index + 1}`}
                     aria-current={index === selectedImageIndex ? "true" : undefined}
                   >
-                    {!loadedThumbs[image] && (
+                    {!loadedThumbs[image] && !failedImages[image] && (
                       <span className="product-detail__thumb-placeholder skeleton-block" aria-hidden="true" />
                     )}
-                    <img
-                      className={loadedThumbs[image] ? "product-detail__thumb-image--loaded" : ""}
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      onLoad={() => setLoadedThumbs((current) => ({ ...current, [image]: true }))}
-                    />
+                    {failedImages[image] ? (
+                      <span className="product-detail__thumb-fallback" aria-hidden="true">
+                        Sin imagen
+                      </span>
+                    ) : (
+                      <img
+                        className={loadedThumbs[image] ? "product-detail__thumb-image--loaded" : ""}
+                        src={image}
+                        alt={`${product.name} ${index + 1}`}
+                        onLoad={() => setLoadedThumbs((current) => ({ ...current, [image]: true }))}
+                        onError={() => setFailedImages((current) => ({ ...current, [image]: true }))}
+                      />
+                    )}
                   </button>
                 ))}
               </div>

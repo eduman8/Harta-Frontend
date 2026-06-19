@@ -2,16 +2,32 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import "./productCard.css";
 
+const normalizeGalleryImages = (images) => {
+  if (!Array.isArray(images)) return [];
+
+  return images.reduce((galleryImages, image) => {
+    const normalizedImage = typeof image === "string" ? image.trim() : "";
+
+    if (!normalizedImage || galleryImages.includes(normalizedImage)) {
+      return galleryImages;
+    }
+
+    return [...galleryImages, normalizedImage];
+  }, []);
+};
+
 function ProductImageLightbox({ images, initialIndex = 0, productName, onClose }) {
-  const galleryImages = Array.isArray(images) ? images.filter(Boolean) : [];
+  const galleryImages = normalizeGalleryImages(images);
   const [currentImageIndex, setCurrentImageIndex] = useState(() => {
     const maxIndex = Math.max(galleryImages.length - 1, 0);
     return Math.min(Math.max(initialIndex, 0), maxIndex);
   });
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchDeltaX, setTouchDeltaX] = useState(0);
+  const [failedImages, setFailedImages] = useState({});
   const hasMultipleImages = galleryImages.length > 1;
   const currentImage = galleryImages[currentImageIndex] || galleryImages[0] || "";
+  const currentImageFailed = Boolean(failedImages[currentImage]);
 
   const closeLightbox = () => {
     setTouchStartX(null);
@@ -57,6 +73,7 @@ function ProductImageLightbox({ images, initialIndex = 0, productName, onClose }
     setTouchStartX(null);
     setTouchDeltaX(0);
   };
+
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -120,13 +137,29 @@ function ProductImageLightbox({ images, initialIndex = 0, productName, onClose }
         </button>
       )}
 
-      <div className="product-image-lightbox__stage">
-        <img
-          className="product-image-lightbox__image"
-          src={currentImage}
-          alt={productName || "Producto"}
-          onClick={(event) => event.stopPropagation()}
-        />
+      <div className="product-image-lightbox__stage" onClick={(event) => event.stopPropagation()}>
+        {!currentImageFailed ? (
+          <img
+            className="product-image-lightbox__image"
+            src={currentImage}
+            alt={productName || "Producto"}
+            onLoad={() => {
+              setFailedImages((current) => {
+                if (!current[currentImage]) return current;
+                const next = { ...current };
+                delete next[currentImage];
+                return next;
+              });
+            }}
+            onError={() => {
+              setFailedImages((current) => ({ ...current, [currentImage]: true }));
+            }}
+          />
+        ) : (
+          <div className="product-image-lightbox__fallback" role="img" aria-label="Imagen no disponible">
+            Sin imagen
+          </div>
+        )}
       </div>
 
       {hasMultipleImages && (

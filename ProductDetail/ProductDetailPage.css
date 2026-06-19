@@ -404,6 +404,30 @@
   opacity: 1;
 }
 
+.product-detail__image-fallback,
+.product-detail__thumb-fallback {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--surface-soft) 76%, var(--card));
+}
+
+.product-detail__image-fallback {
+  border-radius: 18px;
+}
+
+.product-detail__thumb-fallback {
+  border-radius: inherit;
+  font-size: 0.7rem;
+  text-align: center;
+  padding: 0.25rem;
+}
+
 .product-detail__thumb {
   position: relative;
 }
