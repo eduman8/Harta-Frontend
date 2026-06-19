@@ -147,7 +147,7 @@ function ProductCatalog({ initialCategory = "", title = "Productos", subtitle = 
       try {
         const params = buildSearchParams(debouncedFilters);
         const queryString = params.toString();
-        const response = await fetch(`${API_BASE_URL}/products${queryString ? `?${queryString}` : ""}`, {
+        const response = await fetch(`${API_BASE_URL}/api/products${queryString ? `?${queryString}` : ""}`, {
           signal: controller.signal,
         });
         const payload = await response.json().catch(() => []);
