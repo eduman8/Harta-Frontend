@@ -1,23 +1,10 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import "./productCard.css";
-
-const normalizeGalleryImages = (images) => {
-  if (!Array.isArray(images)) return [];
-
-  return images.reduce((galleryImages, image) => {
-    const normalizedImage = typeof image === "string" ? image.trim() : "";
-
-    if (!normalizedImage || galleryImages.includes(normalizedImage)) {
-      return galleryImages;
-    }
-
-    return [...galleryImages, normalizedImage];
-  }, []);
-};
+import { normalizeProductImages } from "../utils/productImages";
 
 function ProductImageLightbox({ images, initialIndex = 0, productName, onClose }) {
-  const galleryImages = normalizeGalleryImages(images);
+  const galleryImages = normalizeProductImages(images);
   const [currentImageIndex, setCurrentImageIndex] = useState(() => {
     const maxIndex = Math.max(galleryImages.length - 1, 0);
     return Math.min(Math.max(initialIndex, 0), maxIndex);
